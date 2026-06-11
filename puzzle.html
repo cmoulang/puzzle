@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Puzzle Canvas Renderer</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            padding: 20px;
+        }
+
+        canvas {
+            border: 2px solid #222;
+            background: white;
+            margin-bottom: 40px;
+            display: block;
+        }
+
+        h2 {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas1" width="350" height="350"></canvas>
+    <h2 id="idStatus"></h2>
+    <button id="idNextButton" title="Next" type="submit">Next</button>
+
+    <script type="module">
+        "use strict";
+
+        const COLORS = [
+            "#ef4444",
+            "#06b6d4",
+            "#eab308",
+            "#8b5cf6",
+            "#3b82f6",
+            "#10b981",
+            "#f97316",
+            "#64748b"
+        ];
+
+        const CELL_SIZE = 50;
+        const GRID_SIZE = 8;
+
+        function drawDate(canvasId, month, day) {
+            const monthString = new Date(2000, month - 1, 1).toLocaleDateString('en-US', { month: 'short' });
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext("2d");
+
+            ctx.strokeStyle = "#111827";
+            ctx.fillStyle = "black";
+            ctx.font = "bold 20px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            var col = (month - 1) % 6;
+            var row = Math.floor((month - 1) / 6);
+
+            var x = col * CELL_SIZE;
+            var y = row * CELL_SIZE;
+
+            ctx.fillText(
+                monthString,
+                x + CELL_SIZE / 2,
+                y + CELL_SIZE / 2
+            );
+
+            col = (day - 1) % 7;
+            row = Math.floor((day - 1) / 7) + 2;
+
+            x = col * CELL_SIZE;
+            y = row * CELL_SIZE;
+
+            ctx.fillText(
+                day,
+                x + CELL_SIZE / 2,
+                y + CELL_SIZE / 2
+            );
+
+        }
+
+        function drawBoard(canvasId, pieces, monthNum, dayNum) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext("2d");
+
+            // Clear
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw empty grid
+            for (let row = 0; row < GRID_SIZE - 1; row++) {
+                for (let col = 0; col < GRID_SIZE - 1; col++) {
+
+                    const x = col * CELL_SIZE;
+                    const y = row * CELL_SIZE;
+
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillRect(x, y, CELL_SIZE, CELL_SIZE);
+
+                    ctx.strokeStyle = "#d1d5db";
+                    ctx.strokeRect(x, y, CELL_SIZE, CELL_SIZE);
+                }
+            }
+
+            // Draw pieces
+            pieces.forEach((piece, pieceIndex) => {
+
+                ctx.fillStyle = COLORS[pieceIndex];
+
+                piece.forEach(cellIndex => {
+
+                    const col = cellIndex % GRID_SIZE;
+                    const row = Math.floor(cellIndex / GRID_SIZE);
+
+                    const x = col * CELL_SIZE;
+                    const y = row * CELL_SIZE;
+
+                    // Filled square
+                    ctx.fillStyle = COLORS[pieceIndex];
+                    ctx.fillRect(x, y, CELL_SIZE, CELL_SIZE);
+
+                    // Border
+                    ctx.strokeStyle = "#111827";
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x, y, CELL_SIZE, CELL_SIZE);
+
+
+                });
+            });
+        }
+
+        var sol = {};
+        
+
+        function drawBoard2()
+        {
+            var num = sol.num;
+            drawBoard("canvas1", sol.solutions[sol.num]);
+            drawDate("canvas1", sol.monthNum, sol.dayNum);
+            var x = sol.num + 1;
+            document.getElementById("idStatus").textContent
+                = x + " / " + sol.count; 
+              
+        }
+
+        try {
+            const d = new Date();
+            const month = d.getMonth() + 1;
+            const day = d.getDate();
+            const fname = "data/" + "solution_" + month + "_" + day + ".html";
+            console.log({fname});
+            fetch(fname)
+                .then(x=>x.json())
+                .then(ob=>{
+                    sol = ob;
+                    sol.num = 0;
+                    drawBoard2();
+                });
+        } catch (e) {
+            console.error(e);
+        }
+
+        document.getElementById("idNextButton").onclick=() => {
+            console.info("click!");            
+            sol.num++;
+            if (sol.num >= sol.count)
+            {
+                sol.num = 0;
+            }
+            drawBoard2();
+        };
+
+    </script>
+
+</body>
+
+</html>
