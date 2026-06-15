@@ -28,13 +28,23 @@
         button {
             font-size: 20px;
         }
+
+        #idStatus {
+            margin-left: 10px;
+            display: inline;
+        }
     </style>
 </head>
 
 <body>
     <canvas id="canvas1" width="350" height="350"></canvas>
-    <h2 id="idStatus"></h2>
-    <button id="idNextButton" title="Next" type="submit">Next</button>
+    <div id="controls">
+        <button id="idPrevButton">⏮</button>
+        <button id="idPlayButton">▶</button>
+        <button id="idPauseButton">⏸</button>
+        <button id="idNextButton">⏭</button>
+        <h2 id="idStatus"></h2>
+    </div>
 
     <script type="module">
         "use strict";
@@ -179,6 +189,20 @@
             drawBoard2();
         }
 
+        function prev()
+        {
+            if (sol.num <= 0)
+            {
+                sol.num = sol.count-1;
+            }
+            else
+            {
+                sol.num--;
+            }
+            drawBoard2();
+        }
+
+
         try {
             const d = new Date();
             const month = d.getMonth() + 1;
@@ -198,20 +222,26 @@
 
         var interval;
 
-        document.getElementById("idNextButton").addEventListener("mousedown", (event) => {
-            console.log({event});
-        } );
 
-        document.getElementById("idNextButton").onmousedown=() => {
+        document.getElementById("idPrevButton").onclick=() => {
+            clearInterval(interval);
+            prev();
+        };
+
+        document.getElementById("idNextButton").onclick=() => {
+            clearInterval(interval);
+            next();
+        };
+
+        document.getElementById("idPlayButton").onclick=() => {
             next();
             clearInterval(interval);
             interval = setInterval(next, 200);
         };
 
-        document.getElementById("idNextButton").onmouseup=() => {
+        document.getElementById("idPauseButton").onclick=() => {        
             clearInterval(interval);
         };
-
 
         //setInterval(next, 100);
 
