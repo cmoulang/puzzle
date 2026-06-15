@@ -149,101 +149,95 @@
             });
 
             ctx.fillStyle = "black";
-            [6,14,51,52,53,54].forEach(cellIndex => {
-                    const col = cellIndex % GRID_SIZE;
-                    const row = Math.floor(cellIndex / GRID_SIZE);
+            [6, 14, 51, 52, 53, 54].forEach(cellIndex => {
+                const col = cellIndex % GRID_SIZE;
+                const row = Math.floor(cellIndex / GRID_SIZE);
 
-                    const x = col * CELL_SIZE;
-                    const y = row * CELL_SIZE;
+                const x = col * CELL_SIZE;
+                const y = row * CELL_SIZE;
 
-                    // Filled square
-                    ctx.fillRect(x, y, CELL_SIZE, CELL_SIZE);
+                // Filled square
+                ctx.fillRect(x, y, CELL_SIZE, CELL_SIZE);
 
-                    // Border
-                    ctx.strokeStyle = "#111827";
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(x, y, CELL_SIZE, CELL_SIZE);
+                // Border
+                ctx.strokeStyle = "#111827";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, CELL_SIZE, CELL_SIZE);
             });
         }
 
         var sol = {};
 
-        function drawBoard2()
-        {
+        function drawBoard2() {
             var num = sol.num;
             drawBoard("canvas1", sol.solutions[sol.num]);
             drawDate("canvas1", sol.monthNum, sol.dayNum);
             var x = sol.num + 1;
             document.getElementById("idStatus").textContent
-                = x + " / " + sol.count; 
-              
+                = x + " / " + sol.count;
+
         }
 
-        function next()
-        {
+        function next() {
             sol.num++;
-            if (sol.num >= sol.count)
-            {
+            if (sol.num >= sol.count) {
                 sol.num = 0;
             }
             drawBoard2();
         }
 
-        function prev()
-        {
-            if (sol.num <= 0)
-            {
-                sol.num = sol.count-1;
+        function prev() {
+            if (sol.num <= 0) {
+                sol.num = sol.count - 1;
             }
-            else
-            {
+            else {
                 sol.num--;
             }
             drawBoard2();
         }
 
 
-        try {
+        {
             const d = new Date();
             const month = d.getMonth() + 1;
             const day = d.getDate();
             const fname = "data/" + "solution_" + month + "_" + day + ".json";
-            console.log({fname});
+            console.log({ fname });
             fetch(fname)
-                .then(x=>x.json())
-                .then(ob=>{
+                .then(x => x.json())
+                .then(ob => {
                     sol = ob;
                     sol.num = 0;
-                    drawBoard2();
+                    drawBoard2()
+                })
+                .catch(e => {
+                    console.error(e);
                 });
-        } catch (e) {
-            console.error(e);
         }
+
 
         var interval;
 
 
-        document.getElementById("idPrevButton").onclick=() => {
+        document.getElementById("idPrevButton").onclick = () => {
             clearInterval(interval);
             prev();
         };
 
-        document.getElementById("idNextButton").onclick=() => {
+        document.getElementById("idNextButton").onclick = () => {
             clearInterval(interval);
             next();
         };
 
-        document.getElementById("idPlayButton").onclick=() => {
+        document.getElementById("idPlayButton").onclick = () => {
             next();
             clearInterval(interval);
             interval = setInterval(next, 200);
         };
 
-        document.getElementById("idPauseButton").onclick=() => {        
+        document.getElementById("idPauseButton").onclick = () => {
             clearInterval(interval);
         };
-
-        //setInterval(next, 100);
 
     </script>
 
