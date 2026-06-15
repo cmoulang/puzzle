@@ -100,6 +100,22 @@
 
         }
 
+        function drawCell(ctx, row, col)
+        {
+            const y = row * CELL_SIZE;
+            const x = col * CELL_SIZE;
+            ctx.fillRect(x, y, CELL_SIZE, CELL_SIZE);
+            ctx.strokeRect(x, y, CELL_SIZE, CELL_SIZE);
+        }
+
+        function drawCellByIndex(ctx, cellIndex)
+        {
+            const row = Math.floor(cellIndex / GRID_SIZE);
+            const col = cellIndex % GRID_SIZE;
+            drawCell(ctx, row, col);
+        }
+
+
         function drawBoard(canvasId, pieces) {
             const canvas = document.getElementById(canvasId);
             const ctx = canvas.getContext("2d");
@@ -108,62 +124,31 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Draw empty grid
+            ctx.fillStyle = "#ffffff";
+            ctx.strokeStyle = "#d1d5db";
             for (let row = 0; row < GRID_SIZE - 1; row++) {
                 for (let col = 0; col < GRID_SIZE - 1; col++) {
-
-                    const x = col * CELL_SIZE;
-                    const y = row * CELL_SIZE;
-
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillRect(x, y, CELL_SIZE, CELL_SIZE);
-
-                    ctx.strokeStyle = "#d1d5db";
-                    ctx.strokeRect(x, y, CELL_SIZE, CELL_SIZE);
+                    drawCell(ctx, row, col);
                 }
             }
 
             // Draw pieces
+            ctx.strokeStyle = "#111827";
+            ctx.lineWidth = 2;
             pieces.forEach((piece, pieceIndex) => {
-
                 ctx.fillStyle = COLORS[pieceIndex];
 
                 piece.forEach(cellIndex => {
-
-                    const col = cellIndex % GRID_SIZE;
-                    const row = Math.floor(cellIndex / GRID_SIZE);
-
-                    const x = col * CELL_SIZE;
-                    const y = row * CELL_SIZE;
-
-                    // Filled square
-                    ctx.fillStyle = COLORS[pieceIndex];
-                    ctx.fillRect(x, y, CELL_SIZE, CELL_SIZE);
-
-                    // Border
-                    ctx.strokeStyle = "#111827";
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(x, y, CELL_SIZE, CELL_SIZE);
-
-
+                    drawCellByIndex(ctx, cellIndex);
                 });
             });
 
-            // draw cells outside board shape
+            // draw cells outside of the board shape in black
             ctx.fillStyle = "black";
+            ctx.strokeStyle = "#111827";
+            ctx.lineWidth = 2;
             [6, 14, 51, 52, 53, 54].forEach(cellIndex => {
-                const col = cellIndex % GRID_SIZE;
-                const row = Math.floor(cellIndex / GRID_SIZE);
-
-                const x = col * CELL_SIZE;
-                const y = row * CELL_SIZE;
-
-                // Filled square
-                ctx.fillRect(x, y, CELL_SIZE, CELL_SIZE);
-
-                // Border
-                ctx.strokeStyle = "#111827";
-                ctx.lineWidth = 2;
-                ctx.strokeRect(x, y, CELL_SIZE, CELL_SIZE);
+                drawCellByIndex(ctx, cellIndex);
             });
         }
 
@@ -201,7 +186,6 @@
             const month = d.getMonth() + 1;
             const day = d.getDate();
             const fname = "data/" + "solution_" + month + "_" + day + ".json";
-            console.log({ fname });
             fetch(fname)
                 .then(x => x.json())
                 .then(ob => {
