@@ -148,6 +148,7 @@
                 });
             });
 
+            // draw cells outside board shape
             ctx.fillStyle = "black";
             [6, 14, 51, 52, 53, 54].forEach(cellIndex => {
                 const col = cellIndex % GRID_SIZE;
@@ -169,12 +170,10 @@
         var sol = {};
 
         function drawBoard2() {
-            var num = sol.num;
             drawBoard("canvas1", sol.solutions[sol.num]);
             drawDate("canvas1", sol.monthNum, sol.dayNum);
-            var x = sol.num + 1;
             document.getElementById("idStatus").textContent
-                = x + " / " + sol.count;
+                = (sol.num + 1) + " / " + sol.count;
 
         }
 
@@ -232,7 +231,7 @@
         document.getElementById("idPlayButton").onclick = () => {
             next();
             clearInterval(interval);
-            interval = setInterval(next, 200);
+            interval = setInterval(next, 250);
         };
 
         document.getElementById("idPauseButton").onclick = () => {
