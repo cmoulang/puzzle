@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>QR Code Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 40px;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      max-width: 400px;
+      margin: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+    button {
+      padding: 10px 16px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #qrcode {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>QR Code Generator</h2>
+  <input
+    id="urlInput"
+    type="text"
+    placeholder="Enter a URL (https://...)"
+  />
+  <button onclick="generateQR()">Generate QR Code</button>
+
+  <div id="qrcode"></div>
+</div>
+
+<!-- QRCode.js library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+  let qr;
+
+  function generateQR() {
+    const url = document.getElementById("urlInput").value.trim();
+    const qrContainer = document.getElementById("qrcode");
+
+    qrContainer.innerHTML = "";
+
+    if (!url) {
+      alert("Please enter a URL");
+      return;
+    }
+
+    qr = new QRCode(qrContainer, {
+      text: url,
+      width: 256,
+      height: 256,
+      colorDark: "#000000",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  }
+</script>
+
+</body>
+</html>
