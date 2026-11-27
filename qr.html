@@ -32,6 +32,10 @@
     #qrcode {
       margin-top: 20px;
     }
+    #qrcode img {
+      max-width: 100%;
+      height: auto;
+    }
   </style>
 </head>
 <body>
@@ -43,6 +47,8 @@
     type="text"
     placeholder="Enter a URL (https://...)"
   />
+  <label for="sizeInput">Image size in pixels (1–4096)</label>
+  <input id="sizeInput" type="number" min="1" max="4096" step="1" value="256" required />
   <button onclick="copyImage()">Copy Image</button>
   <p id="copyStatus" role="status"></p>
 
@@ -57,7 +63,7 @@
     const status = document.getElementById("copyStatus");
     const canvas = document.querySelector("#qrcode canvas");
     if (!canvas) {
-      status.textContent = "Enter text to generate a QR code first.";
+      status.textContent = "Enter text and a valid image size to generate a QR code first.";
       return;
     }
 
@@ -84,9 +90,15 @@
 
   function updateQR(url = document.getElementById("urlInput").value.trim()) {
     const qrContainer = document.getElementById("qrcode");
+    const sizeInput = document.getElementById("sizeInput");
 
     document.getElementById("copyStatus").textContent = "";
     qrContainer.innerHTML = "";
+
+    if (!sizeInput.validity.valid) {
+      document.getElementById("copyStatus").textContent = "Enter a whole number between 1 and 4096 for the image size.";
+      return;
+    }
 
     if (!url) {
       return;
@@ -94,8 +106,8 @@
 
     new QRCode(qrContainer, {
       text: url,
-      width: 256,
-      height: 256,
+      width: sizeInput.valueAsNumber,
+      height: sizeInput.valueAsNumber,
       colorDark: "#000000",
       colorLight: "#ffffff",
       correctLevel: QRCode.CorrectLevel.H
@@ -114,6 +126,7 @@
     window.history.replaceState(null, "", pageUrl);
     updateQR();
   });
+  document.getElementById("sizeInput").addEventListener("input", () => updateQR());
   updateQR();
 </script>
 
