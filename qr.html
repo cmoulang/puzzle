@@ -2,12 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>QR Code Generator</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
       font-family: Arial, sans-serif;
       background: #f4f4f4;
-      padding: 40px;
+      padding: 16px;
+    }
+    @media (min-width: 600px) {
+      body {
+        padding: 40px;
+      }
     }
     .container {
       background: white;
@@ -28,6 +37,7 @@
       padding: 10px 16px;
       font-size: 16px;
       cursor: pointer;
+      min-height: 44px;
     }
     #qrcode {
       margin-top: 20px;
@@ -35,6 +45,7 @@
     #qrcode img {
       max-width: 100%;
       height: auto;
+      margin: auto;
     }
   </style>
 </head>
@@ -45,6 +56,7 @@
   <input
     id="urlInput"
     type="text"
+    aria-label="Text for QR code"
     placeholder="Enter a URL (https://...)"
   />
   <label for="sizeInput">Image size in pixels (1–4096)</label>
@@ -84,7 +96,7 @@
       status.textContent = "Image copied.";
     } catch (error) {
       console.error("Could not copy QR code image:", error);
-      status.textContent = "Could not copy image. Check clipboard permissions and try again.";
+      status.textContent = "Could not copy image. Use HTTPS and check clipboard permissions, or press and hold the QR code to copy or save it.";
     }
   }
 
