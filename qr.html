@@ -43,7 +43,8 @@
     type="text"
     placeholder="Enter a URL (https://...)"
   />
-  <button onclick="generateQR()">Generate QR Code</button>
+  <button onclick="copyImage()">Copy Image</button>
+  <p id="copyStatus" role="status"></p>
 
   <div id="qrcode"></div>
 </div>
@@ -52,20 +53,46 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
-  let qr;
-
-  function generateQR() {
-    const url = document.getElementById("urlInput").value.trim();
-    const qrContainer = document.getElementById("qrcode");
-
-    qrContainer.innerHTML = "";
-
-    if (!url) {
-      alert("Please enter a URL");
+  async function copyImage() {
+    const status = document.getElementById("copyStatus");
+    const canvas = document.querySelector("#qrcode canvas");
+    if (!canvas) {
+      status.textContent = "Enter text to generate a QR code first.";
       return;
     }
 
-    qr = new QRCode(qrContainer, {
+    try {
+      if (!navigator.clipboard?.write || typeof ClipboardItem === "undefined") {
+        throw new Error("Image clipboard access is not available");
+      }
+      const image = new Promise((resolve, reject) => {
+        canvas.toBlob(blob => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error("Could not create QR code image"));
+          }
+        }, "image/png");
+      });
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": image })]);
+      status.textContent = "Image copied.";
+    } catch (error) {
+      console.error("Could not copy QR code image:", error);
+      status.textContent = "Could not copy image. Check clipboard permissions and try again.";
+    }
+  }
+
+  function updateQR(url = document.getElementById("urlInput").value.trim()) {
+    const qrContainer = document.getElementById("qrcode");
+
+    document.getElementById("copyStatus").textContent = "";
+    qrContainer.innerHTML = "";
+
+    if (!url) {
+      return;
+    }
+
+    new QRCode(qrContainer, {
       text: url,
       width: 256,
       height: 256,
@@ -74,6 +101,20 @@
       correctLevel: QRCode.CorrectLevel.H
     });
   }
+
+  const urlInput = document.getElementById("urlInput");
+  urlInput.value = new URLSearchParams(window.location.search).get("text") || "";
+  urlInput.addEventListener("input", () => {
+    const pageUrl = new URL(window.location.href);
+    if (urlInput.value) {
+      pageUrl.searchParams.set("text", urlInput.value);
+    } else {
+      pageUrl.searchParams.delete("text");
+    }
+    window.history.replaceState(null, "", pageUrl);
+    updateQR();
+  });
+  updateQR();
 </script>
 
 </body>
